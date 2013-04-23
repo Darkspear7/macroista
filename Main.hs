@@ -21,12 +21,7 @@ module Main where
           Just f  -> readFile f >>= (\fc -> return (content' ++ "\n" ++ fc))
 
 
-  processFile filename = readFile filename >>= includeFiles >>= putStrLn
-
-
   main :: IO ()
-  main = do
-    arguments <- getArgs
-    if null arguments
-      then printHelp
-      else processFile (head arguments)
+  main = getArgs >>= \arguments ->
+    case safeHead arguments of Nothing       -> printHelp
+                               Just filename -> readFile filename >>= includeFiles >>= putStrLn
