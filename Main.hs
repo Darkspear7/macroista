@@ -8,20 +8,17 @@ module Main where
     ["Usage: macroista input"]
 
 
+  safeHead :: [a] -> Maybe a
+  safeHead []    = Nothing
+  safeHead (x:_) = Just x
+
+
   includeFiles content = foldM includeDirective "" $ lines content where
     includeDirective content' line = do
-      let words' = words line
-      if null words' 
-        then return (content' ++ "\n" ++ line)
-        else do
-          let firstWord = head words'
-          if "@include" /= firstWord
-            then return (content' ++ "\n" ++ line)
-            else do
-              let filename = unwords $ tail words'
-              includeFileContent <- readFile filename
-              return (content' ++ "\n" ++ includeFileContent)
-
+      let filename = let words' = words line in safeHead words' >>= (\firstWord -> if firstWord == "@include" then Just (unwords $ tail words') else Nothing)
+      case filename of
+          Nothing -> return (content' ++ "\n" ++ line)
+          Just f  -> readFile f >>= (\fc -> return (content' ++ "\n" ++ fc))
 
 
   processFile filename = readFile filename >>= includeFiles >>= putStrLn
