@@ -1,0 +1,7 @@
+A ~40 line hack "macro expansion" tool.
+
+After an hour of frustration with cpp and m4, the easiest way to include
+another file in an ordinary text file was to write this "tool".
+
+Actually not the easiest way, because a line or two of sed/awk would have
+worked just as well. Oh, well
